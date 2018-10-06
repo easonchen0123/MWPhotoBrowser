@@ -18,6 +18,10 @@
 #define MWLog(x, ...)
 #endif
 
+#define Is_iPhoneX                              (((int)((ScreenHeight/ScreenWidth)*100) == 216)?YES:NO)
+#define SafeAreaTopHeight                       (Is_iPhoneX ? 88 : 64)
+#define SafeAreaBottomHeight                    (Is_iPhoneX ? 34 : 0)
+
 @class MWPhotoBrowser;
 
 @protocol MWPhotoBrowserDelegate <NSObject>

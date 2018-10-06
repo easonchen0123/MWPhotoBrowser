@@ -21,7 +21,7 @@
 		self.title = @"MWPhotoBrowser";
         
         // Clear cache for testing
-        [[SDImageCache sharedImageCache] clearDisk];
+        [[SDImageCache sharedImageCache] clearDiskOnCompletion:nil];
         [[SDImageCache sharedImageCache] clearMemory];
         
         _segmentedControl = [[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:@"Push", @"Modal", nil]];
@@ -32,7 +32,7 @@
         self.navigationItem.rightBarButtonItem = item;
         self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStyleBordered target:nil action:nil];
 
-        [self loadAssets];
+//        [self loadAssets];
         
     }
     return self;

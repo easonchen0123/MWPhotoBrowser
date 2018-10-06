@@ -6,7 +6,6 @@
 //  Copyright 2010 d3i. All rights reserved.
 //
 
-#import <SDWebImage/SDWebImageDecoder.h>
 #import <SDWebImage/SDWebImageManager.h>
 #import <SDWebImage/SDWebImageOperation.h>
 #import <AssetsLibrary/AssetsLibrary.h>
@@ -212,9 +211,9 @@
 - (void)_performLoadUnderlyingImageAndNotifyWithWebURL:(NSURL *)url {
     @try {
         SDWebImageManager *manager = [SDWebImageManager sharedManager];
-        _webImageOperation = [manager downloadImageWithURL:url
+        _webImageOperation = [manager loadImageWithURL:url
                                                    options:0
-                                                  progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+                                                  progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
                                                       if (expectedSize > 0) {
                                                           float progress = receivedSize / (float)expectedSize;
                                                           NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -223,11 +222,11 @@
                                                           [[NSNotificationCenter defaultCenter] postNotificationName:MWPHOTO_PROGRESS_NOTIFICATION object:dict];
                                                       }
                                                   }
-                                                 completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                                                 completed:^(UIImage *image, NSData * _Nullable data, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
                                                      if (error) {
                                                          MWLog(@"SDWebImage failed to download image: %@", error);
                                                      }
-                                                     _webImageOperation = nil;
+                                                     self->_webImageOperation = nil;
                                                      self.underlyingImage = image;
                                                      dispatch_async(dispatch_get_main_queue(), ^{
                                                          [self imageLoadingComplete];
@@ -246,7 +245,7 @@
         @autoreleasepool {
             @try {
                 self.underlyingImage = [UIImage imageWithContentsOfFile:url.path];
-                if (!_underlyingImage) {
+                if (!self->_underlyingImage) {
                     MWLog(@"Error loading photo from path: %@", url.path);
                 }
             } @finally {
