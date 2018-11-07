@@ -136,8 +136,10 @@
         _livePhotoView.livePhoto = [_photoBrowser livePhotoForPhoto:_photo];
         CGSize size = _livePhotoView.livePhoto.size;
         CGFloat y = ([UIScreen mainScreen].bounds.size.height - size.height) / 2;
+        [_livePhotoView setHidden:NO];
+        [_photoImageView setHidden:YES];
+        [self hideLoadingIndicator];
         [_livePhotoView setFrame:CGRectMake(0, y, size.width, size.height)];
-        [self bringSubviewToFront:_livePhotoView];
         [_livePhotoView startPlaybackWithStyle:PHLivePhotoViewPlaybackStyleHint];
     } else {
         // Fallback on earlier versions
@@ -164,6 +166,8 @@
 			// Set image
 			_photoImageView.image = img;
 			_photoImageView.hidden = NO;
+            _livePhotoView.hidden = YES;
+            
 			
 			// Setup photo frame
 			CGRect photoImageViewFrame;

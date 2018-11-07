@@ -1114,6 +1114,13 @@
 			break;
         }
         case 10: {
+            // Photos
+            NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"IMG_0283" ofType:@"HEIC"]];
+            NSURL *movURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"IMG_0283" ofType:@"mov"]];
+            photo = [MWPhoto livePhotoWithImageURL:url videoURL:movURL];
+            photo.caption = @"The London Eye is a giant Ferris wheel situated on the banks of the River Thames, in London, England.";
+            [photos addObject:photo];
+            
             photo = [MWPhoto photoWithImage:[UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"photo4" ofType:@"jpg"]]];
             photo.caption = @"Fireworks";
             [photos addObject:photo];
@@ -1122,13 +1129,17 @@
 //            return;
             
             // Photos
-            NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"IMG_0283" ofType:@"HEIC"]];
-            NSURL *movURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"IMG_0283" ofType:@"mov"]];
+//            NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"IMG_0283" ofType:@"HEIC"]];
+//            NSURL *movURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"IMG_0283" ofType:@"mov"]];
             photo = [MWPhoto livePhotoWithImageURL:url videoURL:movURL];
             photo.caption = @"The London Eye is a giant Ferris wheel situated on the banks of the River Thames, in London, England.";
             [photos addObject:photo];
             
             photo = [MWPhoto photoWithImage:[UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"photo5" ofType:@"jpg"]]];
+            photo.caption = @"Fireworks";
+            [photos addObject:photo];
+            
+            photo = [MWPhoto photoWithImage:[UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"photo6" ofType:@"jpg"]]];
             photo.caption = @"Fireworks";
             [photos addObject:photo];
             // Options
