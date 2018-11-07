@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <PhotosUI/PhotosUI.h>
 
 // Notifications
 #define MWPHOTO_LOADING_DID_END_NOTIFICATION @"MWPHOTO_LOADING_DID_END_NOTIFICATION"
@@ -67,5 +68,11 @@
 
 // Cancel any background loading of image data
 - (void)cancelAnyLoading;
+
+- (void)getLivePhoto;
+- (BOOL)isLivePhoto;
+
+@property (nonatomic, strong) PHLivePhoto *livePhoto;
+//- (PHLivePhoto *)livePhoto;
 
 @end

@@ -13,6 +13,7 @@
 #import "MWPhoto.h"
 #import "MWPhotoBrowserPrivate.h"
 #import "UIImage+MWPhotoBrowser.h"
+#import <PhotosUI/PhotosUI.h>
 
 // Private methods and properties
 @interface MWZoomingScrollView () {
@@ -20,6 +21,7 @@
     MWPhotoBrowser __weak *_photoBrowser;
 	MWTapDetectingView *_tapView; // for background taps
 	MWTapDetectingImageView *_photoImageView;
+    PHLivePhotoView *_livePhotoView;
 	DACircularProgressView *_loadingIndicator;
     UIImageView *_loadingError;
     
@@ -49,6 +51,10 @@
 		_photoImageView.contentMode = UIViewContentModeCenter;
 		_photoImageView.backgroundColor = [UIColor blackColor];
 		[self addSubview:_photoImageView];
+        
+        // LivePhoto view
+        _livePhotoView = [[PHLivePhotoView alloc] init];
+        [self addSubview:_livePhotoView];
 		
 		// Loading indicator
 		_loadingIndicator = [[DACircularProgressView alloc] initWithFrame:CGRectMake(140.0f, 30.0f, 40.0f, 40.0f)];
@@ -114,11 +120,27 @@
     }
     _photo = photo;
     UIImage *img = [_photoBrowser imageForPhoto:_photo];
+    PHLivePhoto *livePhoto = [_photoBrowser livePhotoForPhoto:_photo];
     if (img) {
         [self displayImage];
+    } else if (livePhoto) {
+        [self displayLivePhoto];
     } else {
         // Will be loading so show loading
         [self showLoadingIndicator];
+    }
+}
+
+- (void)displayLivePhoto {
+    if (@available(iOS 9.1, *)) {
+        _livePhotoView.livePhoto = [_photoBrowser livePhotoForPhoto:_photo];
+        CGSize size = _livePhotoView.livePhoto.size;
+        CGFloat y = ([UIScreen mainScreen].bounds.size.height - size.height) / 2;
+        [_livePhotoView setFrame:CGRectMake(0, y, size.width, size.height)];
+        [self bringSubviewToFront:_livePhotoView];
+        [_livePhotoView startPlaybackWithStyle:PHLivePhotoViewPlaybackStyleHint];
+    } else {
+        // Fallback on earlier versions
     }
 }
 

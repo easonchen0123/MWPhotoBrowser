@@ -25,6 +25,7 @@
 @property (nonatomic, strong) NSURL *photoURL;
 @property (nonatomic, strong) PHAsset *asset;
 @property (nonatomic) CGSize assetTargetSize;
+@property (nonatomic, strong) NSURL *liveVideoURL;
 
 - (void)imageLoadingComplete;
 
@@ -33,6 +34,7 @@
 @implementation MWPhoto
 
 @synthesize underlyingImage = _underlyingImage; // synth property from protocol
+@synthesize livePhoto = _livePhoto;
 
 #pragma mark - Class Methods
 
@@ -50,6 +52,14 @@
 
 + (MWPhoto *)videoWithURL:(NSURL *)url {
     return [[MWPhoto alloc] initWithVideoURL:url];
+}
+
++ (MWPhoto *)livePhotoWithImageURL:(NSURL *)imageURL videoURL:(NSURL *)videoURL {
+    MWPhoto *photo = [[MWPhoto alloc] init];
+    photo.photoURL = imageURL;
+    photo.liveVideoURL = videoURL;
+    photo.isLivePhoto = YES;
+    return photo;
 }
 
 #pragma mark - Init
@@ -167,6 +177,12 @@
 // Set the underlyingImage
 - (void)performLoadUnderlyingImageAndNotify {
     
+    if (_isLivePhoto) {
+
+        [self getLivePhoto];
+        return;
+    }
+
     // Get underlying image
     if (_image) {
         
@@ -248,6 +264,9 @@
                 if (!self->_underlyingImage) {
                     MWLog(@"Error loading photo from path: %@", url.path);
                 }
+//                if (self->_isLivePhoto) {
+//                    [self getLivePhoto];
+//                }
             } @finally {
                 [self performSelectorOnMainThread:@selector(imageLoadingComplete) withObject:nil waitUntilDone:NO];
             }
@@ -349,6 +368,35 @@
         [[PHImageManager defaultManager] cancelImageRequest:_assetVideoRequestID];
         _assetVideoRequestID = PHInvalidImageRequestID;
     }
+}
+
+- (void)getLivePhoto {
+    if (_isLivePhoto) {
+        if (@available(iOS 9.1, *)) {
+            [PHLivePhoto requestLivePhotoWithResourceFileURLs:@[_photoURL, _liveVideoURL]
+                                             placeholderImage:nil
+                                                   targetSize:[UIScreen mainScreen].bounds.size
+                                                  contentMode:PHImageContentModeDefault
+                                                resultHandler:^(PHLivePhoto * _Nullable livePhoto, NSDictionary * _Nonnull info) {
+                                                    
+                                                    self.livePhoto = livePhoto;
+                                                    NSNumber *degradedKeyinfo = info[PHImageResultIsDegradedKey];
+                                                    if ([degradedKeyinfo boolValue] == NO) {
+                                                        [self postCompleteNotification];
+                                                    }
+                                                }];
+        } else {
+            // Fallback on earlier versions
+        }
+    }
+}
+
+- (BOOL)isLivePhoto {
+    return _isLivePhoto;
+}
+
+- (PHLivePhoto *)livePhoto {
+    return _livePhoto;
 }
 
 @end

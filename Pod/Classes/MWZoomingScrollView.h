@@ -26,6 +26,7 @@
 - (id)initWithPhotoBrowser:(MWPhotoBrowser *)browser;
 - (void)displayImage;
 - (void)displayImageFailure;
+- (void)displayLivePhoto;                               // 显示LivePhoto
 - (void)setMaxMinZoomScalesForCurrentBounds;
 - (void)prepareForReuse;
 - (BOOL)displayingVideo;

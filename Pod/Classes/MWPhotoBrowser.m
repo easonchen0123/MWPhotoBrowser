@@ -709,6 +709,13 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     }
 }
 
+- (PHLivePhoto *)livePhotoForPhoto:(id<MWPhoto>)photo {
+    if (photo) {
+        return photo.livePhoto;
+    }
+    return nil;
+}
+
 - (UIImage *)imageForPhoto:(id<MWPhoto>)photo {
 	if (photo) {
 		// Get image or obtain in background
@@ -753,7 +760,11 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     id <MWPhoto> photo = [notification object];
     MWZoomingScrollView *page = [self pageDisplayingPhoto:photo];
     if (page) {
-        if ([photo underlyingImage]) {
+        if ([photo isLivePhoto]) {
+            
+            [page displayLivePhoto];
+            
+        } else if ([photo underlyingImage]) {
             // Successful load
             [page displayImage];
             [self loadAdjacentPhotosIfNecessary:photo];
@@ -953,7 +964,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     // Load adjacent images if needed and the photo is already
     // loaded. Also called after photo has been loaded in background
     id <MWPhoto> currentPhoto = [self photoAtIndex:index];
-    if ([currentPhoto underlyingImage]) {
+    if ([currentPhoto underlyingImage] && [currentPhoto livePhoto]) {
         // photo loaded so load ajacent now
         [self loadAdjacentPhotosIfNecessary:currentPhoto];
     }

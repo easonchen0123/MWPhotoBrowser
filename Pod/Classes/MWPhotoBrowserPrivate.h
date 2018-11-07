@@ -132,5 +132,7 @@
 - (void)loadAdjacentPhotosIfNecessary:(id<MWPhoto>)photo;
 - (void)releaseAllUnderlyingPhotos:(BOOL)preserveCurrent;
 
+- (PHLivePhoto *)livePhotoForPhoto:(id<MWPhoto>)photo API_AVAILABLE(ios(9.1));
+
 @end
 

@@ -10,6 +10,7 @@
 #import "Menu.h"
 #import "SDImageCache.h"
 #import "MWCommon.h"
+#import "TestViewController.h"
 
 @implementation Menu
 
@@ -85,7 +86,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSInteger rows = 9;
+    NSInteger rows = 11;
     @synchronized(_assets) {
         if (_assets.count) rows++;
     }
@@ -152,6 +153,11 @@
 		case 9: {
             cell.textLabel.text = @"Library photos and videos";
             cell.detailTextLabel.text = @"media from device library";
+            break;
+        }
+        case 10: {
+            cell.textLabel.text = @"LivePhoto";
+            cell.detailTextLabel.text = @"LivePhoto";
             break;
         }
 		default: break;
@@ -1106,6 +1112,27 @@
                 }
             }
 			break;
+        }
+        case 10: {
+            photo = [MWPhoto photoWithImage:[UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"photo4" ofType:@"jpg"]]];
+            photo.caption = @"Fireworks";
+            [photos addObject:photo];
+//            TestViewController *vc = [[TestViewController alloc] init];
+//            [self.navigationController pushViewController:vc animated:YES];
+//            return;
+            
+            // Photos
+            NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"IMG_0283" ofType:@"HEIC"]];
+            NSURL *movURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"IMG_0283" ofType:@"mov"]];
+            photo = [MWPhoto livePhotoWithImageURL:url videoURL:movURL];
+            photo.caption = @"The London Eye is a giant Ferris wheel situated on the banks of the River Thames, in London, England.";
+            [photos addObject:photo];
+            
+            photo = [MWPhoto photoWithImage:[UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"photo5" ofType:@"jpg"]]];
+            photo.caption = @"Fireworks";
+            [photos addObject:photo];
+            // Options
+            enableGrid = NO;
         }
 		default: break;
 	}
