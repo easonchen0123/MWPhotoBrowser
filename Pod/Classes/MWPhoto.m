@@ -11,6 +11,7 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "MWPhoto.h"
 #import "MWPhotoBrowser.h"
+#import "UIImage+GIF.h"
 
 @interface MWPhoto () {
 
@@ -243,7 +244,7 @@
                                                          MWLog(@"SDWebImage failed to download image: %@", error);
                                                      }
                                                      self->_webImageOperation = nil;
-                                                     self.underlyingImage = image;
+                                                     self.underlyingImage = [UIImage sd_animatedGIFWithData:data];
                                                      dispatch_async(dispatch_get_main_queue(), ^{
                                                          [self imageLoadingComplete];
                                                      });
@@ -264,9 +265,6 @@
                 if (!self->_underlyingImage) {
                     MWLog(@"Error loading photo from path: %@", url.path);
                 }
-//                if (self->_isLivePhoto) {
-//                    [self getLivePhoto];
-//                }
             } @finally {
                 [self performSelectorOnMainThread:@selector(imageLoadingComplete) withObject:nil waitUntilDone:NO];
             }
