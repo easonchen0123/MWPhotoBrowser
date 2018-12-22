@@ -269,7 +269,7 @@
         }
 		case 5:
             // Photos
-//            [photos addObject:[MWPhoto photoWithURL:[NSURL URLWithString:@"https://kdsappgif.kdslife.com/gifattach/1k2/ut/4a/pdr1d1-wtu.gif"]]];
+            [photos addObject:[MWPhoto photoWithURL:[NSURL URLWithString:@"https://lh3.googleusercontent.com/xFShQbZDDHmGKRs0GAZFiTobN4NHTFDyOfbu1-OvRBkMoIptOprQ56TXdhZjCJjwx1dtTPV-79s=s220"]]];
 			[photos addObject:[MWPhoto photoWithURL:[NSURL URLWithString:@"http://farm4.static.flickr.com/3567/3523321514_371d9ac42f_b.jpg"]]];
 			[photos addObject:[MWPhoto photoWithURL:[NSURL URLWithString:@"http://farm4.static.flickr.com/3629/3339128908_7aecabc34b_b.jpg"]]];
 			[photos addObject:[MWPhoto photoWithURL:[NSURL URLWithString:@"http://farm4.static.flickr.com/3364/3338617424_7ff836d55f_b.jpg"]]];
@@ -1040,7 +1040,7 @@
             
             // Single video
             photo = [MWPhoto photoWithURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"video_thumb" ofType:@"jpg"]]];
-            photo.videoURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"video" ofType:@"mp4"]];
+            photo.videoURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"IMG_0443" ofType:@"mp4"]];
             [photos addObject:photo];
             enableGrid = NO;
             autoPlayOnAppear = YES;

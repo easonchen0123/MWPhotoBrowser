@@ -93,7 +93,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 }
 
 - (void)dealloc {
-    [self clearCurrentVideo];
+//    [self clearCurrentVideo];
     _pagingScrollView.delegate = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self releaseAllUnderlyingPhotos:NO];
@@ -297,17 +297,17 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 }
 
 // Release any retained subviews of the main view.
-- (void)viewDidUnload {
-	_currentPageIndex = 0;
-    _pagingScrollView = nil;
-    _visiblePages = nil;
-    _recycledPages = nil;
-    _toolbar = nil;
-    _previousButton = nil;
-    _nextButton = nil;
-    _progressHUD = nil;
-    [super viewDidUnload];
-}
+//- (void)viewDidUnload {
+//    _currentPageIndex = 0;
+//    _pagingScrollView = nil;
+//    _visiblePages = nil;
+//    _recycledPages = nil;
+//    _toolbar = nil;
+//    _previousButton = nil;
+//    _nextButton = nil;
+//    _progressHUD = nil;
+//    [super viewDidUnload];
+//}
 
 - (BOOL)presentingViewControllerPrefersStatusBarHidden {
     UIViewController *presenting = self.presentingViewController;
@@ -406,7 +406,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 
         // State
         _viewIsActive = NO;
-        [self clearCurrentVideo]; // Clear current playing video
+//        [self clearCurrentVideo]; // Clear current playing video
         
         // Bar state / appearance
         [self restorePreviousNavBarAppearance:animated];
@@ -933,7 +933,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     
     // Handle video on page change
     if (!_rotating && index != _currentVideoIndex) {
-        [self clearCurrentVideo];
+//        [self clearCurrentVideo];
     }
     
     // Release images further away than +/-1
@@ -1184,9 +1184,9 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     }
     NSUInteger index = [self indexForPlayButton:sender];
     if (index != NSUIntegerMax) {
-        if (!_currentVideoPlayerViewController) {
+//        if (!_currentVideoPlayer2ViewController) {
             [self playVideoAtIndex:index];
-        }
+//        }
     }
 }
 
@@ -1208,7 +1208,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     if ([photo respondsToSelector:@selector(getVideoURL:)]) {
         
         // Valid for playing
-        [self clearCurrentVideo];
+//        [self clearCurrentVideo];
         _currentVideoIndex = index;
         [self setVideoLoadingIndicatorVisible:YES atPageIndex:index];
 
@@ -1236,58 +1236,91 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 - (void)_playVideo:(NSURL *)videoURL atPhotoIndex:(NSUInteger)index {
 
     // Setup player
-    _currentVideoPlayerViewController = [[MPMoviePlayerViewController alloc] initWithContentURL:videoURL];
-    [_currentVideoPlayerViewController.moviePlayer prepareToPlay];
-    _currentVideoPlayerViewController.moviePlayer.shouldAutoplay = YES;
-    _currentVideoPlayerViewController.moviePlayer.scalingMode = MPMovieScalingModeAspectFit;
-    _currentVideoPlayerViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+//    _currentVideoPlayerViewController = [[MPMoviePlayerViewController alloc] initWithContentURL:videoURL];
+//    [_currentVideoPlayerViewController.moviePlayer prepareToPlay];
+//    _currentVideoPlayerViewController.moviePlayer.shouldAutoplay = YES;
+//    _currentVideoPlayerViewController.moviePlayer.scalingMode = MPMovieScalingModeFill;
+//    _currentVideoPlayerViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+//
+//    // Remove the movie player view controller from the "playback did finish" notification observers
+//    // Observe ourselves so we can get it to use the crossfade transition
+//    [[NSNotificationCenter defaultCenter] removeObserver:_currentVideoPlayerViewController
+//                                                    name:MPMoviePlayerPlaybackDidFinishNotification
+//                                                  object:_currentVideoPlayerViewController.moviePlayer];
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(videoFinishedCallback:)
+//                                                 name:MPMoviePlayerPlaybackDidFinishNotification
+//                                               object:_currentVideoPlayerViewController.moviePlayer];
+//
+//    // Show
+//    [self presentViewController:_currentVideoPlayerViewController animated:YES completion:nil];
+
+    AVPlayer *avPlayer= [AVPlayer playerWithURL:videoURL];
+    _currentVideoPlayer2ViewController = [[AVPlayerViewController alloc] init];
+    // 控制器的player播放器
+    _currentVideoPlayer2ViewController.player = avPlayer;
     
-    // Remove the movie player view controller from the "playback did finish" notification observers
-    // Observe ourselves so we can get it to use the crossfade transition
-    [[NSNotificationCenter defaultCenter] removeObserver:_currentVideoPlayerViewController
-                                                    name:MPMoviePlayerPlaybackDidFinishNotification
-                                                  object:_currentVideoPlayerViewController.moviePlayer];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(videoFinishedCallback:)
-                                                 name:MPMoviePlayerPlaybackDidFinishNotification
-                                               object:_currentVideoPlayerViewController.moviePlayer];
-
-    // Show
-    [self presentViewController:_currentVideoPlayerViewController animated:YES completion:nil];
-
+    // 试图的填充模式
+    _currentVideoPlayer2ViewController.videoGravity = AVLayerVideoGravityResizeAspect;
+    // 是否显示播放控制条
+    _currentVideoPlayer2ViewController.showsPlaybackControls = YES;
+    // 设置显示的Frame
+    _currentVideoPlayer2ViewController.view.frame = self.view.bounds;
+    _currentVideoPlayer2ViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+//    // 将播放器控制器添加到当前页面控制器中
+//    [self addChildViewController:_currentVideoPlayer2ViewController];
+//    // view一定要添加，否则将不显示
+//    [self.view addSubview:_currentVideoPlayer2ViewController.view];
+    // 播放
+    [_currentVideoPlayer2ViewController.player play];
+    
+//    [_currentVideoPlayer2ViewController willMoveToParentViewController:self];
+    
+    
+    typeof(self) __weak weakSelf = self;
+    [self presentViewController:_currentVideoPlayer2ViewController animated:YES completion:^{
+//        [weakSelf setVideoLoadingIndicatorVisible:NO atPageIndex:index];
+//         _currentVideoIndex = NSUIntegerMax;
+        [weakSelf clear:index];
+    }];
 }
 
-- (void)videoFinishedCallback:(NSNotification*)notification {
-    
-    // Remove observer
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:MPMoviePlayerPlaybackDidFinishNotification
-                                                  object:_currentVideoPlayerViewController.moviePlayer];
-    
-    // Clear up
-    [self clearCurrentVideo];
-    
-    // Dismiss
-    BOOL error = [[[notification userInfo] objectForKey:MPMoviePlayerPlaybackDidFinishReasonUserInfoKey] intValue] == MPMovieFinishReasonPlaybackError;
-    if (error) {
-        // Error occured so dismiss with a delay incase error was immediate and we need to wait to dismiss the VC
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self dismissViewControllerAnimated:YES completion:nil];
-        });
-    } else {
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }
-    
-}
-
-- (void)clearCurrentVideo {
-    [_currentVideoPlayerViewController.moviePlayer stop];
-    [_currentVideoLoadingIndicator removeFromSuperview];
-    _currentVideoPlayerViewController = nil;
-    _currentVideoLoadingIndicator = nil;
-    [[self pageDisplayedAtIndex:_currentVideoIndex] playButton].hidden = NO;
+- (void)clear:(NSInteger)index {
+    [self setVideoLoadingIndicatorVisible:NO atPageIndex:index];
     _currentVideoIndex = NSUIntegerMax;
 }
+
+//- (void)videoFinishedCallback:(NSNotification*)notification {
+//
+//    // Remove observer
+//    [[NSNotificationCenter defaultCenter] removeObserver:self
+//                                                    name:MPMoviePlayerPlaybackDidFinishNotification
+//                                                  object:_currentVideoPlayerViewController.moviePlayer];
+//
+//    // Clear up
+//    [self clearCurrentVideo];
+//
+//    // Dismiss
+//    BOOL error = [[[notification userInfo] objectForKey:MPMoviePlayerPlaybackDidFinishReasonUserInfoKey] intValue] == MPMovieFinishReasonPlaybackError;
+//    if (error) {
+//        // Error occured so dismiss with a delay incase error was immediate and we need to wait to dismiss the VC
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            [self dismissViewControllerAnimated:YES completion:nil];
+//        });
+//    } else {
+//        [self dismissViewControllerAnimated:YES completion:nil];
+//    }
+//
+//}
+
+//- (void)clearCurrentVideo {
+//    [_currentVideoPlayerViewController.moviePlayer stop];
+//    [_currentVideoLoadingIndicator removeFromSuperview];
+//    _currentVideoPlayerViewController = nil;
+//    _currentVideoLoadingIndicator = nil;
+//    [[self pageDisplayedAtIndex:_currentVideoIndex] playButton].hidden = NO;
+//    _currentVideoIndex = NSUIntegerMax;
+//}
 
 - (void)setVideoLoadingIndicatorVisible:(BOOL)visible atPageIndex:(NSUInteger)pageIndex {
     if (_currentVideoLoadingIndicator && !visible) {
@@ -1322,7 +1355,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     if (_gridController) return;
     
     // Clear video
-    [self clearCurrentVideo];
+//    [self clearCurrentVideo];
     
     // Init grid controller
     _gridController = [[MWGridViewController alloc] init];
