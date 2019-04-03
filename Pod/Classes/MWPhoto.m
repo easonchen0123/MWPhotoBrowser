@@ -244,7 +244,11 @@
                                                          MWLog(@"SDWebImage failed to download image: %@", error);
                                                      }
                                                      self->_webImageOperation = nil;
-                                                     self.underlyingImage = [UIImage sd_animatedGIFWithData:data];
+                                                     if (data) {
+                                                         self.underlyingImage = [UIImage sd_animatedGIFWithData:data];
+                                                     } else {
+                                                         self.underlyingImage = image;
+                                                     }
                                                      dispatch_async(dispatch_get_main_queue(), ^{
                                                          [self imageLoadingComplete];
                                                      });
