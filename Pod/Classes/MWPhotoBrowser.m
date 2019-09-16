@@ -121,6 +121,27 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     }
 }
 
+- (void)releaseAllUnderlyingPhoto:(BOOL)preserveCurrent atIndex:(NSUInteger)index {
+    // Create a copy in case this array is modified while we are looping through
+    // Release photos
+    NSArray *copy = [_photos copy];
+    id p = [copy objectAtIndex:index];
+    if (p != [NSNull null]) {
+        if (preserveCurrent && p == [self photoAtIndex:self.currentIndex]) {
+
+        } else {
+            [p unloadUnderlyingImage];
+        }
+    }
+    
+    // Release thumbs
+    copy = [_thumbPhotos copy];
+    p = [_thumbPhotos objectAtIndex:index];
+    if (p != [NSNull null]) {
+        [p unloadUnderlyingImage];
+    }
+}
+
 - (void)didReceiveMemoryWarning {
 
 	// Release any cached data, images, etc that aren't in use.
@@ -631,6 +652,39 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
         [self.view setNeedsLayout];
     }
     
+}
+
+- (void)reloadDataAtIndex:(NSUInteger)index {
+    // Reset
+    _photoCount = NSNotFound;
+    
+    // Get data
+//    NSUInteger numberOfPhotos = [self numberOfPhotos];
+    [self releaseAllUnderlyingPhoto:YES atIndex:index];
+    [_photos replaceObjectAtIndex:index withObject:[NSNull null]];
+    [_thumbPhotos replaceObjectAtIndex:index withObject:[NSNull null]];
+//    [_photos removeAllObjects];
+//    [_thumbPhotos removeAllObjects];
+//    for (int i = 0; i < numberOfPhotos; i++) {
+//        [_photos addObject:[NSNull null]];
+//        [_thumbPhotos addObject:[NSNull null]];
+//    }
+    
+    // Update current page index
+//    if (numberOfPhotos > 0) {
+//        _currentPageIndex = MAX(0, MIN(_currentPageIndex, numberOfPhotos - 1));
+//    } else {
+//        _currentPageIndex = 0;
+//    }
+    
+    // Update layout
+    if ([self isViewLoaded]) {
+        while (_pagingScrollView.subviews.count) {
+            [[_pagingScrollView.subviews lastObject] removeFromSuperview];
+        }
+        [self performLayout];
+        [self.view setNeedsLayout];
+    }
 }
 
 - (NSUInteger)numberOfPhotos {
