@@ -134,12 +134,26 @@
 - (void)displayLivePhoto {
     if (@available(iOS 9.1, *)) {
         _livePhotoView.livePhoto = [_photoBrowser livePhotoForPhoto:_photo];
-        CGSize size = _livePhotoView.livePhoto.size;
-        CGFloat y = ([UIScreen mainScreen].bounds.size.height - size.height) / 2;
+        CGSize livephotoSize = _livePhotoView.livePhoto.size;
         [_livePhotoView setHidden:NO];
         [_photoImageView setHidden:YES];
         [self hideLoadingIndicator];
-        [_livePhotoView setFrame:CGRectMake(0, y, size.width, size.height)];
+        
+        CGSize boundsSize = self.bounds.size;
+        CGFloat xScale = boundsSize.width / livephotoSize.width;    // the scale needed to perfectly fit the image width-wise
+        CGFloat yScale = boundsSize.height / livephotoSize.height;  // the scale needed to perfectly fit the image height-wise
+        
+        if (xScale < yScale) {
+            // 水平（上下留白）
+            CGFloat y = (self.bounds.size.height - livephotoSize.height * xScale) / 2;
+            CGRect frame = CGRectMake(0, y, self.bounds.size.width, livephotoSize.height * xScale);
+            [_livePhotoView setFrame:frame];
+        } else {
+            // 垂直（左右留白）
+            CGFloat x = (self.bounds.size.height - livephotoSize.width * xScale) / 2;
+            CGRect frame = CGRectMake(x, 0, livephotoSize.width * yScale, self.bounds.size.height);
+            [_livePhotoView setFrame:frame];
+        }
         [_livePhotoView startPlaybackWithStyle:PHLivePhotoViewPlaybackStyleHint];
     } else {
         // Fallback on earlier versions

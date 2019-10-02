@@ -465,12 +465,13 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     [self.navigationController setNavigationBarHidden:NO animated:animated];
     UINavigationBar *navBar = self.navigationController.navigationBar;
     navBar.tintColor = [UIColor whiteColor];
+    navBar.titleTextAttributes = @{ NSForegroundColorAttributeName:navBar.tintColor};
     navBar.barTintColor = nil;
     navBar.shadowImage = nil;
     navBar.translucent = YES;
     navBar.barStyle = UIBarStyleBlackTranslucent;
     [navBar setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
-    [navBar setBackgroundImage:nil forBarMetrics:UIBarMetricsLandscapePhone];
+    [navBar setBackgroundImage:nil forBarMetrics:UIBarMetricsCompact];
 }
 
 - (void)storePreviousNavBarAppearance {
@@ -481,7 +482,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     _previousNavBarHidden = self.navigationController.navigationBarHidden;
     _previousNavBarStyle = self.navigationController.navigationBar.barStyle;
     _previousNavigationBarBackgroundImageDefault = [self.navigationController.navigationBar backgroundImageForBarMetrics:UIBarMetricsDefault];
-    _previousNavigationBarBackgroundImageLandscapePhone = [self.navigationController.navigationBar backgroundImageForBarMetrics:UIBarMetricsLandscapePhone];
+    _previousNavigationBarBackgroundImageLandscapePhone = [self.navigationController.navigationBar backgroundImageForBarMetrics:UIBarMetricsCompact];
 }
 
 - (void)restorePreviousNavBarAppearance:(BOOL)animated {
@@ -489,11 +490,12 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
         [self.navigationController setNavigationBarHidden:_previousNavBarHidden animated:animated];
         UINavigationBar *navBar = self.navigationController.navigationBar;
         navBar.tintColor = _previousNavBarTintColor;
+        navBar.titleTextAttributes = @{ NSForegroundColorAttributeName:navBar.tintColor};
         navBar.translucent = _previousNavBarTranslucent;
         navBar.barTintColor = _previousNavBarBarTintColor;
         navBar.barStyle = _previousNavBarStyle;
         [navBar setBackgroundImage:_previousNavigationBarBackgroundImageDefault forBarMetrics:UIBarMetricsDefault];
-        [navBar setBackgroundImage:_previousNavigationBarBackgroundImageLandscapePhone forBarMetrics:UIBarMetricsLandscapePhone];
+        [navBar setBackgroundImage:_previousNavigationBarBackgroundImageLandscapePhone forBarMetrics:UIBarMetricsCompact];
         // Restore back button if we need to
         if (_previousViewControllerBackButton) {
             UIViewController *previousViewController = [self.navigationController topViewController]; // We've disappeared so previous is now top
@@ -1709,7 +1711,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 
             // Show
             typeof(self) __weak weakSelf = self;
-            [self.activityViewController setCompletionHandler:^(NSString *activityType, BOOL completed) {
+            [self.activityViewController setCompletionWithItemsHandler:^(UIActivityType  _Nullable activityType, BOOL completed, NSArray * _Nullable returnedItems, NSError * _Nullable activityError) {
                 weakSelf.activityViewController = nil;
                 [weakSelf hideControlsAfterDelay];
                 [weakSelf hideProgressHUD:YES];
@@ -1742,25 +1744,25 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 }
 
 - (void)showProgressHUDWithMessage:(NSString *)message {
-    self.progressHUD.labelText = message;
+    self.progressHUD.label.text = message;
     self.progressHUD.mode = MBProgressHUDModeIndeterminate;
-    [self.progressHUD show:YES];
+    [self.progressHUD showAnimated:YES];
     self.navigationController.navigationBar.userInteractionEnabled = NO;
 }
 
 - (void)hideProgressHUD:(BOOL)animated {
-    [self.progressHUD hide:animated];
+    [self.progressHUD hideAnimated:animated];
     self.navigationController.navigationBar.userInteractionEnabled = YES;
 }
 
 - (void)showProgressHUDCompleteMessage:(NSString *)message {
     if (message) {
-        if (self.progressHUD.isHidden) [self.progressHUD show:YES];
-        self.progressHUD.labelText = message;
+        if (self.progressHUD.isHidden) [self.progressHUD showAnimated:YES];
+        self.progressHUD.label.text = message;
         self.progressHUD.mode = MBProgressHUDModeCustomView;
-        [self.progressHUD hide:YES afterDelay:1.5];
+        [self.progressHUD hideAnimated:YES afterDelay:1.5];
     } else {
-        [self.progressHUD hide:YES];
+        [self.progressHUD hideAnimated:YES];
     }
     self.navigationController.navigationBar.userInteractionEnabled = YES;
 }
