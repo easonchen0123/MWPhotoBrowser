@@ -1128,9 +1128,9 @@
             photo = [MWPhoto photoWithImage:[UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"photo4" ofType:@"jpg"]]];
             photo.caption = @"Fireworks";
             [photos addObject:photo];
-            TestViewController *vc = [[TestViewController alloc] init];
-            [self.navigationController pushViewController:vc animated:YES];
-            return;
+//            TestViewController *vc = [[TestViewController alloc] init];
+//            [self.navigationController pushViewController:vc animated:YES];
+//            return;
             
             // Photos
 //            NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"IMG_0283" ofType:@"HEIC"]];

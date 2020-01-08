@@ -150,11 +150,12 @@
             [_livePhotoView setFrame:frame];
         } else {
             // 垂直（左右留白）
-            CGFloat x = (self.bounds.size.height - livephotoSize.width * xScale) / 2;
+            CGFloat x = (self.bounds.size.width - livephotoSize.width * yScale) / 2;
             CGRect frame = CGRectMake(x, 0, livephotoSize.width * yScale, self.bounds.size.height);
             [_livePhotoView setFrame:frame];
         }
         [_livePhotoView startPlaybackWithStyle:PHLivePhotoViewPlaybackStyleHint];
+        [self setNeedsLayout];
     } else {
         // Fallback on earlier versions
     }
@@ -370,6 +371,7 @@
     // Center the image as it becomes smaller than the size of the screen
     CGSize boundsSize = self.bounds.size;
     CGRect frameToCenter = _photoImageView.frame;
+    CGRect livePhotoFrameToCenter = _livePhotoView.frame;
     
     // Horizontally
     if (frameToCenter.size.width < boundsSize.width) {
@@ -377,6 +379,11 @@
 	} else {
         frameToCenter.origin.x = 0;
 	}
+    if (livePhotoFrameToCenter.size.width < boundsSize.width) {
+        livePhotoFrameToCenter.origin.x = floorf((boundsSize.width - livePhotoFrameToCenter.size.width) / 2.0);
+    } else {
+        livePhotoFrameToCenter.origin.x = 0;
+    }
     
     // Vertically
     if (frameToCenter.size.height < boundsSize.height) {
@@ -384,11 +391,17 @@
 	} else {
         frameToCenter.origin.y = 0;
 	}
+    if (frameToCenter.size.height < boundsSize.height) {
+        livePhotoFrameToCenter.origin.y = floorf((boundsSize.height - livePhotoFrameToCenter.size.height) / 2.0);
+    } else {
+        livePhotoFrameToCenter.origin.y = 0;
+    }
     
 	// Center
 	if (!CGRectEqualToRect(_photoImageView.frame, frameToCenter))
 		_photoImageView.frame = frameToCenter;
-	
+    if (!CGRectEqualToRect(_livePhotoView.frame, livePhotoFrameToCenter))
+        _livePhotoView.frame = livePhotoFrameToCenter;
 }
 
 #pragma mark - UIScrollViewDelegate
