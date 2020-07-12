@@ -1695,9 +1695,9 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
             
             // Show activity view controller
             NSMutableArray *items = [NSMutableArray arrayWithObject:[photo underlyingImage]];
-            if (photo.caption) {
-                [items addObject:photo.caption];
-            }
+//            if (photo.caption) {
+//                [items addObject:photo.caption];
+//            }
             self.activityViewController = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
             
             // Show loading spinner after a couple of seconds
