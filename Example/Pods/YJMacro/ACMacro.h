@@ -77,6 +77,15 @@
 #define gray_color      [UIColor grayColor]
 #define magenta_color   [UIColor magentaColor]
 
+///各种灰色
+#define gray333_color   COLOR(51, 51, 51, 1)
+#define gray666_color   COLOR(102, 102, 102, 1)
+#define gray999_color   COLOR(153, 153, 153, 1)
+#define gray1D_color    COLOR(29, 29, 29, 1)
+#define grayE5_color    COLOR(229, 229, 229, 1)
+#define grayEE_color    COLOR(238, 238, 238, 1)
+#define grayF1_color    COLOR(241, 241, 241, 1)
+
 #pragma mark - Funtion Method (宏 方法)
 
 #define V_IMAGE(imgName) [UIImage imageNamed:imgName]
@@ -87,6 +96,7 @@
 #define s_Path(str1,str2) [str1 stringByAppendingPathComponent:str2]
 #define s_Num(num1) [NSString stringWithFormat:@"%d",num1]
 #define s_Integer(num1) [NSString stringWithFormat:@"%ld",num1]
+#define s_UInteger(num1) [NSString stringWithFormat:@"%lu",num1]
 
 
 #endif

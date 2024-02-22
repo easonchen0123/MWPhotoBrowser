@@ -18,11 +18,11 @@
   },
   "social_media_url": "https://twitter.com/mwaterfall",
   "source": {
-    "git": "https://github.com/mwaterfall/MWPhotoBrowser.git",
+    "git": "https://github.com/easonchen0123/MWPhotoBrowser.git",
     "tag": "2.1.2"
   },
   "platforms": {
-    "ios": "8.0"
+    "ios": "13.0"
   },
   "source_files": "Pod/Classes/**/*",
   "resource_bundles": {
@@ -40,7 +40,7 @@
   "weak_frameworks": "Photos",
   "dependencies": {
     "MBProgressHUD": [
-      "~> 1.1.0"
+      "~> 1.2.0"
     ],
     "DACircularProgress": [
       "~> 2.3"
@@ -49,7 +49,7 @@
       "~> 1.0.2"
     ],
     "SDWebImage": [
-      "~> 4.4.2"
+      "~> 5.9.5"
     ]
   }
 }

@@ -245,7 +245,7 @@
                                                      }
                                                      self->_webImageOperation = nil;
                                                      if (data) {
-                                                         self.underlyingImage = [UIImage sd_animatedGIFWithData:data];
+                                                         self.underlyingImage = [UIImage sd_imageWithGIFData:data];
                                                      } else {
                                                          self.underlyingImage = image;
                                                      }

@@ -4,11 +4,19 @@ target 'MWPhotoBrowser_Example' do
   pod "MWPhotoBrowser", :path => "../"
 end
 
-target 'MWPhotoBrowser_Tests' do
-  pod "MWPhotoBrowser", :path => "../"
+#target 'MWPhotoBrowser_Tests' do
+#  pod "MWPhotoBrowser", :path => "../"
+#
+#  pod 'Specta'
+#  pod 'Expecta'
+#  pod 'FBSnapshotTestCase'
+#  pod 'Expecta+Snapshots'
+#end
 
-  pod 'Specta'
-  pod 'Expecta'
-  pod 'FBSnapshotTestCase'
-  pod 'Expecta+Snapshots'
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+    end
+  end
 end
