@@ -13,6 +13,7 @@
 		0A6DE74D219032E000C8AB11 /* TestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A6DE74C219032E000C8AB11 /* TestViewController.m */; };
 		0A6DE74F2190349D00C8AB11 /* PhotosUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6DE74E2190349D00C8AB11 /* PhotosUI.framework */; };
 		0A6DE751219034A500C8AB11 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6DE750219034A500C8AB11 /* Photos.framework */; };
+		0AD9609B2BF4B24F00079C60 /* BaseNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9609A2BF4B24F00079C60 /* BaseNavigationController.m */; };
 		0EC5D4B51B4C46E50092ACC1 /* photo1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0EC5D4A41B4C46E50092ACC1 /* photo1.jpg */; };
 		0EC5D4B61B4C46E50092ACC1 /* photo1t.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0EC5D4A51B4C46E50092ACC1 /* photo1t.jpg */; };
 		0EC5D4B71B4C46E50092ACC1 /* photo2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0EC5D4A61B4C46E50092ACC1 /* photo2.jpg */; };
@@ -66,6 +67,8 @@
 		0A6DE74C219032E000C8AB11 /* TestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestViewController.m; sourceTree = "<group>"; };
 		0A6DE74E2190349D00C8AB11 /* PhotosUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PhotosUI.framework; path = System/Library/Frameworks/PhotosUI.framework; sourceTree = SDKROOT; };
 		0A6DE750219034A500C8AB11 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
+		0AD960992BF4B24F00079C60 /* BaseNavigationController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseNavigationController.h; sourceTree = "<group>"; };
+		0AD9609A2BF4B24F00079C60 /* BaseNavigationController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BaseNavigationController.m; sourceTree = "<group>"; };
 		0EC5D4A41B4C46E50092ACC1 /* photo1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = photo1.jpg; path = "MWPhotoBrowser/Local Media/photo1.jpg"; sourceTree = SOURCE_ROOT; };
 		0EC5D4A51B4C46E50092ACC1 /* photo1t.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = photo1t.jpg; path = "MWPhotoBrowser/Local Media/photo1t.jpg"; sourceTree = SOURCE_ROOT; };
 		0EC5D4A61B4C46E50092ACC1 /* photo2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = photo2.jpg; path = "MWPhotoBrowser/Local Media/photo2.jpg"; sourceTree = SOURCE_ROOT; };
@@ -208,6 +211,8 @@
 		6003F593195388D20070C39A /* Example */ = {
 			isa = PBXGroup;
 			children = (
+				0AD960992BF4B24F00079C60 /* BaseNavigationController.h */,
+				0AD9609A2BF4B24F00079C60 /* BaseNavigationController.m */,
 				4C18E1171B47E72800E3D63A /* AppDelegate.h */,
 				4C18E1181B47E72800E3D63A /* AppDelegate.m */,
 				4C18E1191B47E72800E3D63A /* Menu.h */,
@@ -322,6 +327,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -426,6 +432,7 @@
 				6003F59A195388D20070C39A /* main.m in Sources */,
 				0A6DE74D219032E000C8AB11 /* TestViewController.m in Sources */,
 				4C18E11C1B47E72800E3D63A /* Menu.m in Sources */,
+				0AD9609B2BF4B24F00079C60 /* BaseNavigationController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
 
   s.source = {
     :git => 'https://github.com/easonchen0123/MWPhotoBrowser.git',
-    :tag => '2.1.2'
+    :tag => '2.1.2_240222'
   }
   s.platform = :ios, '12.0'
   s.source_files = 'Pod/Classes/**/*'

@@ -11,6 +11,7 @@
 #import "SDImageCache.h"
 #import "MWCommon.h"
 #import "TestViewController.h"
+#import "BaseNavigationController.h"
 
 @implementation Menu
 
@@ -1185,8 +1186,11 @@
         [self.navigationController pushViewController:browser animated:YES];
     } else {
         // Modal
-        UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:browser];
+//        UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:browser];
+        // 隐藏statusBar在NavigationController中
+        BaseNavigationController *nc = [[BaseNavigationController alloc] initWithRootViewController:browser];
         nc.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        nc.modalPresentationStyle = UIModalPresentationFullScreen;
         [self presentViewController:nc animated:YES completion:nil];
     }
     
