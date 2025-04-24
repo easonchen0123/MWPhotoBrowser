@@ -4,11 +4,11 @@ PODS:
   - MWPhotoBrowser (2.1.2):
     - DACircularProgress (~> 2.3)
     - MBProgressHUD (~> 1.2.0)
-    - SDWebImage (~> 5.9.5)
+    - SDWebImage (~> 5.21.0)
     - YJMacro (~> 1.0.2)
-  - SDWebImage (5.9.5):
-    - SDWebImage/Core (= 5.9.5)
-  - SDWebImage/Core (5.9.5)
+  - SDWebImage (5.21.0):
+    - SDWebImage/Core (= 5.21.0)
+  - SDWebImage/Core (5.21.0)
   - YJMacro (1.0.3)
 
 DEPENDENCIES:
@@ -28,10 +28,10 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
-  MWPhotoBrowser: b0227aea930363de239185b7e59fd5be65abe141
-  SDWebImage: 0b2ba0d56479bf6a45ecddbfd5558bea93150d25
+  MWPhotoBrowser: afd130d89a6e7a0adfd735ece8330404186d493c
+  SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
   YJMacro: e10525cc110cb40192256d348148a46f6b407289
 
 PODFILE CHECKSUM: 29081d33349dddfca9bedac61311ffb9b698a24d
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2
