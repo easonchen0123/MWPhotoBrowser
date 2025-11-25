@@ -178,7 +178,7 @@
     MWPhoto *photo, *thumb;
     BOOL displayActionButton = YES;
     BOOL displaySelectionButtons = NO;
-    BOOL displayNavArrows = NO;
+    BOOL displayNavArrows = YES;
     BOOL enableGrid = YES;
     BOOL startOnGrid = NO;
     BOOL autoPlayOnAppear = NO;
