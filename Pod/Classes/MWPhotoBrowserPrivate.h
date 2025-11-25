@@ -73,6 +73,7 @@
     BOOL _didSavePreviousStateOfNavBar;
     BOOL _skipNextPagingScrollViewPositioning;
     BOOL _viewHasAppearedInitially;
+    BOOL _settingControlsHidden; // Prevent layout during control animation
     CGPoint _currentGridContentOffset;
     
 }
