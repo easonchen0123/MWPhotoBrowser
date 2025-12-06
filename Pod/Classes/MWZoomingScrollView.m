@@ -14,6 +14,7 @@
 #import "MWPhotoBrowserPrivate.h"
 #import "UIImage+MWPhotoBrowser.h"
 #import <PhotosUI/PhotosUI.h>
+#import "MWTapDetectingLivePhotoView.h"
 
 // Private methods and properties
 @interface MWZoomingScrollView () {
@@ -21,7 +22,7 @@
     MWPhotoBrowser __weak *_photoBrowser;
 	MWTapDetectingView *_tapView; // for background taps
 	MWTapDetectingImageView *_photoImageView;
-    PHLivePhotoView *_livePhotoView;
+    MWTapDetectingLivePhotoView *_livePhotoView;
 	DACircularProgressView *_loadingIndicator;
     UIImageView *_loadingError;
     
@@ -53,7 +54,9 @@
 		[self addSubview:_photoImageView];
         
         // LivePhoto view
-        _livePhotoView = [[PHLivePhotoView alloc] init];
+        _livePhotoView = [[MWTapDetectingLivePhotoView alloc] initWithFrame:CGRectZero];
+        _livePhotoView.tapDelegate = self;
+        _livePhotoView.backgroundColor = [UIColor blackColor];
         [self addSubview:_livePhotoView];
 		
 		// Loading indicator
@@ -133,29 +136,46 @@
 
 - (void)displayLivePhoto {
     if (@available(iOS 9.1, *)) {
-        _livePhotoView.livePhoto = [_photoBrowser livePhotoForPhoto:_photo];
-        CGSize livephotoSize = _livePhotoView.livePhoto.size;
-        [_livePhotoView setHidden:NO];
-        [_photoImageView setHidden:YES];
-        [self hideLoadingIndicator];
-        
-        CGSize boundsSize = self.bounds.size;
-        CGFloat xScale = boundsSize.width / livephotoSize.width;    // the scale needed to perfectly fit the image width-wise
-        CGFloat yScale = boundsSize.height / livephotoSize.height;  // the scale needed to perfectly fit the image height-wise
-        
-        if (xScale < yScale) {
-            // 水平（上下留白）
-            CGFloat y = (self.bounds.size.height - livephotoSize.height * xScale) / 2;
-            CGRect frame = CGRectMake(0, y, self.bounds.size.width, livephotoSize.height * xScale);
-            [_livePhotoView setFrame:frame];
-        } else {
-            // 垂直（左右留白）
-            CGFloat x = (self.bounds.size.width - livephotoSize.width * yScale) / 2;
-            CGRect frame = CGRectMake(x, 0, livephotoSize.width * yScale, self.bounds.size.height);
-            [_livePhotoView setFrame:frame];
+        if (_photo && _livePhotoView.livePhotoView.livePhoto == nil) {
+            
+            // Reset
+            self.maximumZoomScale = 1;
+            self.minimumZoomScale = 1;
+            self.zoomScale = 1;
+            self.contentSize = CGSizeMake(0, 0);
+            
+            // Get live photo from browser
+            PHLivePhoto *livePhoto = [_photoBrowser livePhotoForPhoto:_photo];
+            if (livePhoto) {
+                
+                // Hide indicator
+                [self hideLoadingIndicator];
+                
+                // Set live photo
+                _livePhotoView.livePhotoView.livePhoto = livePhoto;
+                _livePhotoView.hidden = NO;
+                _photoImageView.hidden = YES;
+                
+                // Setup live photo frame
+                CGSize livephotoSize = livePhoto.size;
+                CGRect livePhotoViewFrame;
+                livePhotoViewFrame.origin = CGPointZero;
+                livePhotoViewFrame.size = livephotoSize;
+                _livePhotoView.frame = livePhotoViewFrame;
+                self.contentSize = livePhotoViewFrame.size;
+                
+                // Set zoom to minimum zoom
+                [self setMaxMinZoomScalesForLivePhoto];
+                
+                // Start playback
+                [_livePhotoView.livePhotoView startPlaybackWithStyle:PHLivePhotoViewPlaybackStyleHint];
+                
+            } else {
+                // Show image failure
+                [self displayImageFailure];
+            }
+            [self setNeedsLayout];
         }
-        [_livePhotoView startPlaybackWithStyle:PHLivePhotoViewPlaybackStyleHint];
-        [self setNeedsLayout];
     } else {
         // Fallback on earlier versions
     }
@@ -242,7 +262,7 @@
         id <MWPhoto> photoWithProgress = [dict objectForKey:@"photo"];
         if (photoWithProgress == self.photo) {
             float progress = [[dict valueForKey:@"progress"] floatValue];
-            _loadingIndicator.progress = MAX(MIN(1, progress), 0);
+            self->_loadingIndicator.progress = MAX(MIN(1, progress), 0);
         }
     });
 }
@@ -346,6 +366,75 @@
 
 }
 
+- (void)setMaxMinZoomScalesForLivePhoto {
+    if (@available(iOS 9.1, *)) {
+        // Reset
+        self.maximumZoomScale = 1;
+        self.minimumZoomScale = 1;
+        self.zoomScale = 1;
+        
+        // Bail if no live photo
+        if (_livePhotoView.livePhotoView.livePhoto == nil) return;
+        
+        // Reset position
+        CGSize livephotoSize = _livePhotoView.livePhotoView.livePhoto.size;
+        _livePhotoView.frame = CGRectMake(0, 0, livephotoSize.width, livephotoSize.height);
+        
+        // Sizes
+        CGSize boundsSize = self.bounds.size;
+        CGSize photoSize = livephotoSize;
+        
+        // Calculate Min
+        CGFloat xScale = boundsSize.width / photoSize.width;    // the scale needed to perfectly fit the photo width-wise
+        CGFloat yScale = boundsSize.height / photoSize.height;  // the scale needed to perfectly fit the photo height-wise
+        CGFloat minScale = MIN(xScale, yScale);                 // use minimum of these to allow the photo to become fully visible
+        
+        // Calculate Max
+        CGFloat maxScale = 3;
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            // Let them go a bit bigger on a bigger screen!
+            maxScale = 4;
+        }
+        
+        // Photo is smaller than screen so no zooming!
+        if (xScale >= 1 && yScale >= 1) {
+            minScale = 1.0;
+        }
+        
+        // Set min/max zoom
+        self.maximumZoomScale = maxScale;
+        self.minimumZoomScale = minScale;
+        
+        // Initial zoom - similar to image view
+        CGFloat zoomScale = minScale;
+        if (_photoBrowser.zoomPhotosToFill) {
+            // Zoom photo to fill if the aspect ratios are fairly similar
+            CGFloat boundsAR = boundsSize.width / boundsSize.height;
+            CGFloat photoAR = photoSize.width / photoSize.height;
+            // Zooms standard portrait photos on a 3.5in screen but not on a 4in screen.
+            if (ABS(boundsAR - photoAR) < 0.17) {
+                zoomScale = MAX(xScale, yScale);
+                // Ensure we don't zoom in or out too far, just in case
+                zoomScale = MIN(MAX(minScale, zoomScale), maxScale);
+            }
+        }
+        self.zoomScale = zoomScale;
+        
+        // If we're zooming to fill then centralise
+        if (self.zoomScale != minScale) {
+            // Centralise
+            self.contentOffset = CGPointMake((photoSize.width * self.zoomScale - boundsSize.width) / 2.0,
+                                             (photoSize.height * self.zoomScale - boundsSize.height) / 2.0);
+        }
+        
+        // Disable scrolling initially until the first pinch to fix issues with swiping on an initially zoomed in photo
+        self.scrollEnabled = NO;
+        
+        // Layout
+        [self setNeedsLayout];
+    }
+}
+
 #pragma mark - Layout
 
 - (void)layoutSubviews {
@@ -407,6 +496,10 @@
 #pragma mark - UIScrollViewDelegate
 
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
+    // Return the appropriate view based on what's currently displayed
+    if (_livePhotoView && !_livePhotoView.hidden) {
+        return _livePhotoView;
+    }
 	return _photoImageView;
 }
 

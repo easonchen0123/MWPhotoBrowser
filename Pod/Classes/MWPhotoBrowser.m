@@ -183,7 +183,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 	[self.view addSubview:_pagingScrollView];
 	
     // Toolbar
-    _toolbar = [[UIToolbar alloc] initWithFrame:[self frameForToolbarAtOrientation:self.interfaceOrientation]];
+    _toolbar = [[UIToolbar alloc] initWithFrame:[self frameForToolbarAtOrientation:[self currentInterfaceOrientation]]];
     _toolbar.tintColor = [UIColor whiteColor];
     _toolbar.barTintColor = nil;
     [_toolbar setBackgroundImage:nil forToolbarPosition:UIToolbarPositionAny barMetrics:UIBarMetricsDefault];
@@ -362,14 +362,33 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     if (!_viewHasAppearedInitially) {
         _leaveStatusBarAlone = [self presentingViewControllerPrefersStatusBarHidden];
         // Check if status bar is hidden on first appear, and if so then ignore it
-        if (CGRectEqualToRect([[UIApplication sharedApplication] statusBarFrame], CGRectZero)) {
-            _leaveStatusBarAlone = YES;
+        if (@available(iOS 13.0, *)) {
+            UIStatusBarManager *statusBarManager = self.view.window.windowScene.statusBarManager;
+            if (!statusBarManager || CGRectEqualToRect(statusBarManager.statusBarFrame, CGRectZero)) {
+                _leaveStatusBarAlone = YES;
+            }
+        } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+            if (CGRectEqualToRect([[UIApplication sharedApplication] statusBarFrame], CGRectZero)) {
+                _leaveStatusBarAlone = YES;
+            }
+#pragma clang diagnostic pop
         }
     }
     // Set style
     if (!_leaveStatusBarAlone && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        _previousStatusBarStyle = [[UIApplication sharedApplication] statusBarStyle];
-        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:animated];
+        if (@available(iOS 13.0, *)) {
+            // On iOS 13+ status bar style should be controlled via preferredStatusBarStyle.
+            // We already implement -preferredStatusBarStyle to return UIStatusBarStyleLightContent,
+            // so no explicit global call is needed here.
+        } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+            _previousStatusBarStyle = [[UIApplication sharedApplication] statusBarStyle];
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:animated];
+#pragma clang diagnostic pop
+        }
     }
     
     // Navigation bar appearance
@@ -443,7 +462,15 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     
     // Status bar
     if (!_leaveStatusBarAlone && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        [[UIApplication sharedApplication] setStatusBarStyle:_previousStatusBarStyle animated:animated];
+        if (@available(iOS 13.0, *)) {
+            // On iOS 13+ status bar style is driven by preferredStatusBarStyle,
+            // no need to restore a global style.
+        } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+            [[UIApplication sharedApplication] setStatusBarStyle:_previousStatusBarStyle animated:animated];
+#pragma clang diagnostic pop
+        }
     }
     
 	// Super
@@ -471,7 +498,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     navBar.barTintColor = nil;
     navBar.shadowImage = nil;
     navBar.translucent = YES;
-    navBar.barStyle = UIBarStyleBlackTranslucent;
+    navBar.barStyle = UIBarStyleBlack;
     [navBar setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
     [navBar setBackgroundImage:nil forBarMetrics:UIBarMetricsCompact];
 }
@@ -524,7 +551,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 	_performingLayout = YES;
 	
 	// Toolbar
-	_toolbar.frame = [self frameForToolbarAtOrientation:self.interfaceOrientation];
+	_toolbar.frame = [self frameForToolbarAtOrientation:[self currentInterfaceOrientation]];
     
 	// Remember index
 	NSUInteger indexPriorToLayout = _currentPageIndex;
@@ -1045,6 +1072,17 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 
 #pragma mark - Frame Calculations
 
+- (UIInterfaceOrientation)currentInterfaceOrientation {
+    if (@available(iOS 13.0, *)) {
+        UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
+        if (orientation != UIInterfaceOrientationUnknown) {
+            return orientation;
+        }
+    }
+    // Fallback for older iOS versions
+    return [UIApplication sharedApplication].statusBarOrientation;
+}
+
 - (CGRect)frameForPagingScrollView {
     CGRect frame = self.view.bounds;// [[UIScreen mainScreen] bounds];
     frame.origin.x -= PADDING;
@@ -1453,12 +1491,12 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     // Animate grid in and photo scroller out
     [_gridController willMoveToParentViewController:self];
     [UIView animateWithDuration:animated ? 0.3 : 0 animations:^(void) {
-        _gridController.view.frame = self.view.bounds;
+        self->_gridController.view.frame = self.view.bounds;
         CGRect newPagingFrame = [self frameForPagingScrollView];
         newPagingFrame = CGRectOffset(newPagingFrame, 0, (self.startOnGrid ? 1 : -1) * newPagingFrame.size.height);
-        _pagingScrollView.frame = newPagingFrame;
+        self->_pagingScrollView.frame = newPagingFrame;
     } completion:^(BOOL finished) {
-        [_gridController didMoveToParentViewController:self];
+        [self->_gridController didMoveToParentViewController:self];
     }];
     
 }
@@ -1491,7 +1529,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     // Animate, hide grid and show paging scroll view
     [UIView animateWithDuration:0.3 animations:^{
         tmpGridController.view.frame = CGRectOffset(self.view.bounds, 0, (self.startOnGrid ? -1 : 1) * self.view.bounds.size.height);
-        _pagingScrollView.frame = [self frameForPagingScrollView];
+        self->_pagingScrollView.frame = [self frameForPagingScrollView];
     } completion:^(BOOL finished) {
         [tmpGridController willMoveToParentViewController:nil];
         [tmpGridController.view removeFromSuperview];
@@ -1547,7 +1585,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     if ([self areControlsHidden] && !hidden && animated) {
         
         // Toolbar
-        _toolbar.frame = CGRectOffset([self frameForToolbarAtOrientation:self.interfaceOrientation], 0, animatonOffset);
+        _toolbar.frame = CGRectOffset([self frameForToolbarAtOrientation:[self currentInterfaceOrientation]], 0, animatonOffset);
         
         // Captions
         for (MWZoomingScrollView *page in _visiblePages) {
@@ -1569,7 +1607,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
         [self.navigationController.navigationBar setAlpha:alpha];
         
         // Toolbar
-        self->_toolbar.frame = [self frameForToolbarAtOrientation:self.interfaceOrientation];
+        self->_toolbar.frame = [self frameForToolbarAtOrientation:[self currentInterfaceOrientation]];
         if (hidden) self->_toolbar.frame = CGRectOffset(self->_toolbar.frame, 0, animatonOffset);
         self->_toolbar.alpha = alpha;
 
@@ -1587,7 +1625,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
         }
         
         // Selected buttons
-        for (MWZoomingScrollView *page in _visiblePages) {
+        for (MWZoomingScrollView *page in self->_visiblePages) {
             if (page.selectedButton) {
                 UIButton *v = page.selectedButton;
                 CGRect newFrame = [self frameForSelectedButton:v atIndex:0];

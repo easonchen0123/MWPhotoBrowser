@@ -133,8 +133,13 @@
 
 #pragma mark - Layout
 
+- (BOOL)isPortraitLayout {
+    CGSize size = self.view.bounds.size;
+    return size.height >= size.width;
+}
+
 - (CGFloat)getColumns {
-    if ((UIInterfaceOrientationIsPortrait(self.interfaceOrientation))) {
+    if ([self isPortraitLayout]) {
         return _columns;
     } else {
         return _columnsL;
@@ -142,7 +147,7 @@
 }
 
 - (CGFloat)getMargin {
-    if ((UIInterfaceOrientationIsPortrait(self.interfaceOrientation))) {
+    if ([self isPortraitLayout]) {
         return _margin;
     } else {
         return _marginL;
@@ -150,7 +155,7 @@
 }
 
 - (CGFloat)getGutter {
-    if ((UIInterfaceOrientationIsPortrait(self.interfaceOrientation))) {
+    if ([self isPortraitLayout]) {
         return _gutter;
     } else {
         return _gutterL;
