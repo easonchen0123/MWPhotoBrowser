@@ -101,6 +101,7 @@
     self.playButton = nil;
     _photoImageView.hidden = NO;
     _photoImageView.image = nil;
+    _livePhotoView.livePhotoView.livePhoto = nil;
     _index = NSUIntegerMax;
 }
 
@@ -377,12 +378,11 @@
         if (_livePhotoView.livePhotoView.livePhoto == nil) return;
         
         // Reset position
-        CGSize livephotoSize = _livePhotoView.livePhotoView.livePhoto.size;
-        _livePhotoView.frame = CGRectMake(0, 0, livephotoSize.width, livephotoSize.height);
-        
+        _livePhotoView.frame = CGRectMake(0, 0, _livePhotoView.livePhotoView.frame.size.width, _livePhotoView.livePhotoView.frame.size.height);
+                
         // Sizes
         CGSize boundsSize = self.bounds.size;
-        CGSize photoSize = livephotoSize;
+        CGSize photoSize = _livePhotoView.livePhotoView.livePhoto.size;
         
         // Calculate Min
         CGFloat xScale = boundsSize.width / photoSize.width;    // the scale needed to perfectly fit the photo width-wise
@@ -480,7 +480,7 @@
 	} else {
         frameToCenter.origin.y = 0;
 	}
-    if (frameToCenter.size.height < boundsSize.height) {
+    if (livePhotoFrameToCenter.size.height < boundsSize.height) {
         livePhotoFrameToCenter.origin.y = floorf((boundsSize.height - livePhotoFrameToCenter.size.height) / 2.0);
     } else {
         livePhotoFrameToCenter.origin.y = 0;
