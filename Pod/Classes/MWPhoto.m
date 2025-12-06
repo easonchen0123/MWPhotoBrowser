@@ -380,13 +380,19 @@
                                                    targetSize:[UIScreen mainScreen].bounds.size
                                                   contentMode:PHImageContentModeDefault
                                                 resultHandler:^(PHLivePhoto * _Nullable livePhoto, NSDictionary * _Nonnull info) {
-                                                    
-                                                    self.livePhoto = livePhoto;
-                                                    NSNumber *degradedKeyinfo = info[PHImageResultIsDegradedKey];
-                                                    if ([degradedKeyinfo boolValue] == NO) {
-                                                        [self postCompleteNotification];
-                                                    }
-                                                }];
+                
+                NSError *error = info[PHLivePhotoInfoErrorKey];
+                if (error) {
+                    NSLog(@"%@", error.localizedDescription);
+                    return;
+                }
+
+                NSNumber *degradedKeyinfo = info[PHLivePhotoInfoIsDegradedKey];
+                if (degradedKeyinfo == nil || [degradedKeyinfo boolValue] == NO) {
+                    self.livePhoto = livePhoto;
+                    [self postCompleteNotification];
+                }
+            }];
         } else {
             // Fallback on earlier versions
         }

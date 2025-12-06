@@ -1118,7 +1118,7 @@
         case 10: {
             photo = [MWPhoto photoWithURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"video_thumb" ofType:@"jpg"]]];
             photo.videoURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"video" ofType:@"mp4"]];
-            [photos addObject:photo];
+//            [photos addObject:photo];
             // Photos
             NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"IMG_0283" ofType:@"HEIC"]];
             NSURL *movURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"IMG_0283" ofType:@"mov"]];
